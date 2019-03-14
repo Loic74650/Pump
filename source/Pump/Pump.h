@@ -10,8 +10,6 @@ Features:
 NB: all timings are in milliseconds
 */
 
- 
-
 #ifndef PUMP_h
 #define PUMP_h
 #define mPUMP_VERSION "0.0.1"
