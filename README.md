@@ -3,7 +3,7 @@ A simple library for Arduino to handle home-pool filtration and persitaltic pump
 
 Version 0.0.1
 
-####Features: 
+#### Features: 
 
 * keeps track of running time
 * keeps track of Tank Level
