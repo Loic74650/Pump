@@ -26,7 +26,6 @@ NB: all timings are in milliseconds
 class Pump{
   public:
 
-  
     Pump(uint8_t, uint8_t);
     void loop();
     bool Start();
