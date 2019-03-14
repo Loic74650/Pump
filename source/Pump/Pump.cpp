@@ -5,7 +5,6 @@
 //PumpPin is the Arduino relay output pin number to be switched to start/stop the pump
 //TankLevelPin is the Arduino digital input pin number connected to the tank level switch
 Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin=NO_TANK)
-//Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin)
 {
   pumppin = PumpPin;
   tanklevelpin = TankLevelPin;
@@ -38,7 +37,7 @@ void Pump::loop()
   }
 }
 
-//Switch pump ON (if over time was not reached)
+//Switch pump ON (if over time limit was not reached and if tank is not empty)
 bool Pump::Start()
 {
   if((digitalRead(pumppin) == PUMP_OFF) && !UpTimeError && ((tanklevelpin == NO_TANK) || (digitalRead(tanklevelpin) != TANK_EMPTY)))//if((digitalRead(pumppin) == false))
