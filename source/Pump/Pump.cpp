@@ -4,15 +4,21 @@
 //Constructor
 //PumpPin is the Arduino relay output pin number to be switched to start/stop the pump
 //TankLevelPin is the Arduino digital input pin number connected to the tank level switch
-Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin=NO_TANK)
+//Interlockpin is the Arduino digital input number connected to an "interlock". 
+//If this input is LOW, pump is stopped and/or cannot start. This is used for instance to stop
+//the Orp or pH pumps in case filtration pump is not running
+Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin=NO_TANK, uint8_t Interlockpin=NO_INTERLOCK)
+//Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin)
 {
   pumppin = PumpPin;
   tanklevelpin = TankLevelPin;
+  interlockpin = Interlockpin;
   StartTime = 0;
+  LastStartTime = 0;
   StopTime = 0;
-  UpTime = 0;
-  MaxUpTime = 30*60*1000; //default value is 30mins        
+  UpTime = 0;        
   UpTimeError = 0;
+  MaxUpTime = DefaultMaxUpTime;
 }
 
 //Call this in the main loop, for every loop, as often as possible
@@ -35,15 +41,21 @@ void Pump::loop()
     if(digitalRead(tanklevelpin) == TANK_EMPTY)
        Stop();
   }
+
+  if(interlockpin != NO_INTERLOCK)
+  {
+    if(digitalRead(interlockpin) == INTERLOCK_NOK)
+       Stop();
+  }
 }
 
-//Switch pump ON (if over time limit was not reached and if tank is not empty)
+//Switch pump ON (if over time was not reached)
 bool Pump::Start()
 {
-  if((digitalRead(pumppin) == PUMP_OFF) && !UpTimeError && ((tanklevelpin == NO_TANK) || (digitalRead(tanklevelpin) != TANK_EMPTY)))//if((digitalRead(pumppin) == false))
+  if((digitalRead(pumppin) == PUMP_OFF) && !UpTimeError && ((tanklevelpin == NO_TANK) || (digitalRead(tanklevelpin) != TANK_EMPTY)) && ((interlockpin == NO_INTERLOCK) || (digitalRead(interlockpin) == INTERLOCK_OK)))//if((digitalRead(pumppin) == false))
   {
     digitalWrite(pumppin, PUMP_ON);
-    StartTime = millis(); 
+    StartTime = LastStartTime = millis(); 
     return true; 
   }
   else return false;
@@ -83,7 +95,7 @@ void Pump::ClearErrors()
 {
   if(UpTimeError)
   {
-    MaxUpTime += 30*60*1000;
+    MaxUpTime += DefaultMaxUpTime;
     UpTimeError = false;
   }
 }
@@ -92,6 +104,12 @@ void Pump::ClearErrors()
 bool Pump::TankLevel()
 {
   return digitalRead(tanklevelpin);
+}
+
+//interlock status
+bool Pump::Interlock()
+{
+  return digitalRead(interlockpin);
 }
 
 //pump status
