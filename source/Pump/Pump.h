@@ -14,7 +14,7 @@ NB: all timings are in milliseconds
 
 #ifndef PUMP_h
 #define PUMP_h
-#define PUMP_VERSION "0.0.2"
+#define PUMP_VERSION "0.0.1"
 
 //Constants used in some of the functions below
 #define PUMP_ON  1
@@ -31,7 +31,7 @@ NB: all timings are in milliseconds
 class Pump{
   public:
 
-    Pump(uint8_t, uint8_t, uint8_t);
+    Pump(uint8_t, uint8_t, uint8_t, uint8_t);
     void loop();
     bool Start();
     bool Stop();
@@ -52,6 +52,7 @@ class Pump{
   private:
      
     uint8_t pumppin; 
+    uint8_t isrunningsensorpin;
     uint8_t tanklevelpin;
     uint8_t interlockpin;
 };

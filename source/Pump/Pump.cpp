@@ -7,10 +7,13 @@
 //Interlockpin is the Arduino digital input number connected to an "interlock". 
 //If this input is LOW, pump is stopped and/or cannot start. This is used for instance to stop
 //the Orp or pH pumps in case filtration pump is not running
-Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin=NO_TANK, uint8_t Interlockpin=NO_INTERLOCK)
-//Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin)
+//IsRunningSensorPin is the pin which is checked to know whether the pump is running or not. 
+//It can be the same pin as "PumpPin" in case there is no sensor on the pump (pressure, current, etc) which is not as robust. 
+//This option is especially useful in the case where the filtration pump is not managed by the Arduino. 
+Pump::Pump(uint8_t PumpPin, uint8_t IsRunningSensorPin, uint8_t TankLevelPin=NO_TANK, uint8_t Interlockpin=NO_INTERLOCK)
 {
   pumppin = PumpPin;
+  isrunningsensorpin = IsRunningSensorPin;
   tanklevelpin = TankLevelPin;
   interlockpin = Interlockpin;
   StartTime = 0;
@@ -24,7 +27,7 @@ Pump::Pump(uint8_t PumpPin, uint8_t TankLevelPin=NO_TANK, uint8_t Interlockpin=N
 //Call this in the main loop, for every loop, as often as possible
 void Pump::loop()
 {
-  if(digitalRead(pumppin) == PUMP_ON)
+  if(digitalRead(isrunningsensorpin) == PUMP_ON)
   {
     UpTime += millis() - StartTime;
     StartTime = millis();
@@ -52,7 +55,7 @@ void Pump::loop()
 //Switch pump ON (if over time was not reached)
 bool Pump::Start()
 {
-  if((digitalRead(pumppin) == PUMP_OFF) && !UpTimeError && ((tanklevelpin == NO_TANK) || (digitalRead(tanklevelpin) != TANK_EMPTY)) && ((interlockpin == NO_INTERLOCK) || (digitalRead(interlockpin) == INTERLOCK_OK)))//if((digitalRead(pumppin) == false))
+  if((digitalRead(isrunningsensorpin) == PUMP_OFF) && !UpTimeError && ((tanklevelpin == NO_TANK) || (digitalRead(tanklevelpin) != TANK_EMPTY)) && ((interlockpin == NO_INTERLOCK) || (digitalRead(interlockpin) == INTERLOCK_OK)))//if((digitalRead(pumppin) == false))
   {
     digitalWrite(pumppin, PUMP_ON);
     StartTime = LastStartTime = millis(); 
@@ -64,7 +67,7 @@ bool Pump::Start()
 //Switch pump OFF
 bool Pump::Stop()
 {
-  if(digitalRead(pumppin) == PUMP_ON)
+  if(digitalRead(isrunningsensorpin) == PUMP_ON)
   {
     digitalWrite(pumppin, PUMP_OFF);
     UpTime += millis() - StartTime; 
@@ -115,5 +118,5 @@ bool Pump::Interlock()
 //pump status
 bool Pump::IsRunning()
 {
-  return digitalRead(pumppin);
+  return digitalRead(isrunningsensorpin);
 }
