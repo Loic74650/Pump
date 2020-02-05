@@ -14,7 +14,7 @@ NB: all timings are in milliseconds
 
 #ifndef PUMP_h
 #define PUMP_h
-#define PUMP_VERSION "0.0.1"
+#define PUMP_VERSION "0.0.3"
 
 //Constants used in some of the functions below
 #define PUMP_ON  1
