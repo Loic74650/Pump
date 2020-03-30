@@ -1,7 +1,7 @@
 ### Pump
 A simple library for Arduino to handle home-pool filtration and persitaltic pumps
 
-Version 0.0.3
+Version 1.0.0
 
 #### Features: 
 
