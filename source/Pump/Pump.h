@@ -1,20 +1,18 @@
 /*
             Pump - a simple library to handle home-pool filtration and persitaltic pumps
-                        (c) Loic74 <loic74650@gmail.com> 2018
+                 (c) Loic74 <loic74650@gmail.com> 2017-2020
 Features: 
 
 - keeps track of running time
-- keeps track of Tank Level
+- keeps track of Tank Levels
 - set max running time limit
 
 NB: all timings are in milliseconds
 */
 
- 
-
 #ifndef PUMP_h
 #define PUMP_h
-#define PUMP_VERSION "0.0.3"
+#define PUMP_VERSION "1.0.0"
 
 //Constants used in some of the functions below
 #define PUMP_ON  1
@@ -31,15 +29,19 @@ NB: all timings are in milliseconds
 class Pump{
   public:
 
-    Pump(uint8_t, uint8_t, uint8_t, uint8_t);
+    Pump(uint8_t, uint8_t, uint8_t, uint8_t, double, double);
     void loop();
     bool Start();
     bool Stop();
     bool IsRunning();
     bool TankLevel();
+    double GetTankUsage();    
+    void SetTankVolume(double Volume);
+    void SetFlowRate(double FlowRate);
     bool Interlock();
     void SetMaxUpTime(unsigned long Max);
     void ResetUpTime();
+
     void ClearErrors();
     
     unsigned long UpTime;
@@ -48,12 +50,13 @@ class Pump{
     unsigned long StartTime;
     unsigned long LastStartTime;
     unsigned long StopTime; 
-          
+    double flowrate, tankvolume;          
   private:
      
     uint8_t pumppin; 
     uint8_t isrunningsensorpin;
     uint8_t tanklevelpin;
     uint8_t interlockpin;
+
 };
 #endif

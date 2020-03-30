@@ -10,12 +10,16 @@
 //IsRunningSensorPin is the pin which is checked to know whether the pump is running or not. 
 //It can be the same pin as "PumpPin" in case there is no sensor on the pump (pressure, current, etc) which is not as robust. 
 //This option is especially useful in the case where the filtration pump is not managed by the Arduino. 
-Pump::Pump(uint8_t PumpPin, uint8_t IsRunningSensorPin, uint8_t TankLevelPin=NO_TANK, uint8_t Interlockpin=NO_INTERLOCK)
+//FlowRate is the flow rate of the pump in Liters/Hour, typically 1.5 or 3.0 L/hour for peristaltic pumps for pools. This is used to compute how much of the tank we have emptied out
+//TankVolume is used here to compute the percentage fill used
+Pump::Pump(uint8_t PumpPin, uint8_t IsRunningSensorPin, uint8_t TankLevelPin=NO_TANK, uint8_t Interlockpin=NO_INTERLOCK, double FlowRate=0.0, double TankVolume=0.0)
 {
   pumppin = PumpPin;
   isrunningsensorpin = IsRunningSensorPin;
   tanklevelpin = TankLevelPin;
   interlockpin = Interlockpin;
+  flowrate = FlowRate; //in Liters per hour
+  tankvolume = TankVolume; //in Liters
   StartTime = 0;
   LastStartTime = 0;
   StopTime = 0;
@@ -107,6 +111,32 @@ void Pump::ClearErrors()
 bool Pump::TankLevel()
 {
   return digitalRead(tanklevelpin);
+}
+
+//Return the percentage fill usage of the tank based on the past consumption
+double Pump::GetTankUsage() 
+{
+  float PercentageUsed = -1.0;
+  if((tankvolume != 0.0) && (flowrate !=0.0))
+  {
+    double MinutesOfUpTime = (double)UpTime/1000.0/60.0;
+    double Consumption = flowrate/60.0*MinutesOfUpTime;
+    PercentageUsed = Consumption/tankvolume*100.0;
+  }
+  return (PercentageUsed);  
+}
+
+//Set how many liters of liquid are left in the Tank
+//Typically call this function when changing tank and set it to the full volume
+void Pump::SetTankVolume(double Volume)
+{
+  tankvolume = Volume;
+}
+
+//Set flow rate of the pump in Liters/hour
+void Pump::SetFlowRate(double FlowRate)
+{
+  flowrate = FlowRate;
 }
 
 //interlock status
