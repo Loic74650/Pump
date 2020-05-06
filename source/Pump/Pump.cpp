@@ -110,7 +110,8 @@ void Pump::ClearErrors()
 //tank level status
 bool Pump::TankLevel()
 {
-  return digitalRead(tanklevelpin);
+  
+  return (digitalRead(tanklevelpin) == TANK_FULL);
 }
 
 //Return the percentage fill usage of the tank based on the past consumption
