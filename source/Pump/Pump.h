@@ -24,7 +24,7 @@ NB: all timings are in milliseconds
 #define NO_TANK 255 
 #define NO_INTERLOCK 255  
 
-#define DefaultMaxUpTime 30*60*1000 //default value is 30mins  
+#define DefaultMaxUpTime 1800000 //default value is 30mins 
  
 class Pump{
   public:

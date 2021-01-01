@@ -75,6 +75,7 @@ bool Pump::Stop()
   {
     digitalWrite(pumppin, PUMP_OFF);
     UpTime += millis() - StartTime; 
+	StopTime = millis();
     return true;
   }
   else return false;
@@ -85,7 +86,7 @@ bool Pump::Stop()
 void Pump::ResetUpTime()
 {
   StartTime = 0;
-  StopTime = 0;
+  //StopTime = 0;
   UpTime = 0;
 }
 
@@ -143,11 +144,11 @@ void Pump::SetFlowRate(double FlowRate)
 //interlock status
 bool Pump::Interlock()
 {
-  return digitalRead(interlockpin);
+  return (digitalRead(interlockpin) == INTERLOCK_OK);
 }
 
 //pump status
 bool Pump::IsRunning()
 {
-  return digitalRead(isrunningsensorpin);
+  return (digitalRead(isrunningsensorpin) == PUMP_ON);
 }
