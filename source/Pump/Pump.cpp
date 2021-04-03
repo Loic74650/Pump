@@ -54,12 +54,12 @@ void Pump::loop()
   }
 }
 
-//Switch pump ON (if over time was not reached)
+//Switch pump ON if over time was not reached, tank is not empty and interlock is OK
 bool Pump::Start()
 {
   if((digitalRead(isrunningsensorpin) == PUMP_OFF) 
     && !UpTimeError
-    && ((tanklevelpin == NO_TANK) || ((tanklevelpin != NO_TANK && tanklevelpin != NO_LEVEL) && (digitalRead(tanklevelpin) != TANK_EMPTY)))
+    && this->Pump::TankLevel()
     && ((interlockpin == NO_INTERLOCK) || (digitalRead(interlockpin) == INTERLOCK_OK)))    //if((digitalRead(pumppin) == false))
   {
     digitalWrite(pumppin, PUMP_ON);
@@ -88,6 +88,7 @@ void Pump::ResetUpTime()
   StartTime = 0;
   StopTime = 0;
   UpTime = 0;
+  MaxUpTime = DefaultMaxUpTime;
 }
 
 //Set a maximum running time (in millisecs) per day (in case ResetUpTime() is called once per day)
